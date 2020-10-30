@@ -36,7 +36,15 @@ RUN git config --global user.email "ochaloup@redhat.com"  &&\
 # building gatsby blog at $HOME/myblog
 # when mounted with a mount from system it can be copied to the mounted directory
 ARG BLOGDIR=myblog
-RUN /home/gatsby/node_modules/.bin/gatsby new "$BLOGDIR" https://github.com/alxshelepenok/gatsby-starter-lumen
+
+### lumen starter : sources
+# https://medium.com/swlh/how-to-build-a-jamstack-blog-site-with-gatsby-js-lumin-and-netlify-2562eb1eeb38
+# https://github.com/alxshelepenok/gatsby-starter-lumen
+# RUN /home/gatsby/node_modules/.bin/gatsby new "$BLOGDIR" https://github.com/alxshelepenok/gatsby-starter-lumen
+
+## novela : sources
+# https://github.com/narative/gatsby-theme-novela#getting-started-with-gatsby-starter-novela
+RUN /home/gatsby/node_modules/.bin/gatsby new "$BLOGDIR" https://github.com/narative/gatsby-starter-novela
 
 # BUILD AS
 # docker build . -t gatsby-build --build-arg USER_ID=$(id -u)
@@ -53,11 +61,12 @@ RUN /home/gatsby/node_modules/.bin/gatsby new "$BLOGDIR" https://github.com/alxs
 
 # AFTER
 ## there could be already ~/myblog generated in the docker image and only doing like `mv ~/myblog ~/sources/myblog` is necessary
-## gatsby new myblog https://github.com/alxshelepenok/gatsby-starter-lumen
 # cd ~/sources
 # cd myblog
 # yarn upgrade
-# npm install --save gatsby-transformer-asciidoc
+
+# installing the AsciiDoc transformer to write articles with AsciiDoc
 ## see details at: https://www.gatsbyjs.org/packages/gatsby-transformer-asciidoc/
+# npm install --save gatsby-transformer-asciidoc
 
 # TODO: what to do next? :)
