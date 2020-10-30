@@ -35,7 +35,8 @@ RUN git config --global user.email "ochaloup@redhat.com"  &&\
 
 # building gatsby blog at $HOME/myblog
 # when mounted with a mount from system it can be copied to the mounted directory
-RUN /home/gatsby/node_modules/.bin/gatsby new myblog https://github.com/alxshelepenok/gatsby-starter-lumen
+ARG BLOGDIR=myblog
+RUN /home/gatsby/node_modules/.bin/gatsby new "$BLOGDIR" https://github.com/alxshelepenok/gatsby-starter-lumen
 
 # BUILD AS
 # docker build . -t gatsby-build --build-arg USER_ID=$(id -u)
