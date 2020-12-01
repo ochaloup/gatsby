@@ -22,7 +22,6 @@ WORKDIR /home/gatsby
 
 RUN npm install node-gyp sharp &&\
     npm install gatsby-cli
-RUN npm install --save gatsby-transformer-asciidoc
 
 RUN echo 'PATH=$PATH:$HOME/node_modules/.bin/' >> /home/gatsby/.bashrc
 
@@ -40,33 +39,41 @@ ARG BLOGDIR=myblog
 ### lumen starter : sources
 # https://medium.com/swlh/how-to-build-a-jamstack-blog-site-with-gatsby-js-lumin-and-netlify-2562eb1eeb38
 # https://github.com/alxshelepenok/gatsby-starter-lumen
-# RUN /home/gatsby/node_modules/.bin/gatsby new "$BLOGDIR" https://github.com/alxshelepenok/gatsby-starter-lumen
-
+RUN /home/gatsby/node_modules/.bin/gatsby new "$BLOGDIR" https://github.com/alxshelepenok/gatsby-starter-lumen
 ## novela : sources
 # https://github.com/narative/gatsby-theme-novela#getting-started-with-gatsby-starter-novela
-RUN /home/gatsby/node_modules/.bin/gatsby new "$BLOGDIR" https://github.com/narative/gatsby-starter-novela
+# RUN /home/gatsby/node_modules/.bin/gatsby new "$BLOGDIR" https://github.com/narative/gatsby-starter-novela
+
+RUN cd $BLOGDIR && yarn upgrade
+
+## installing the AsciiDoc transformer to write articles with AsciiDoc (https://www.gatsbyjs.org/packages/gatsby-transformer-asciidoc/)
+RUN npm install --save gatsby-transformer-asciidoc
+
+RUN npm install --save bluebird &&\
+    npm install --save gatsby-link &&\
+    npm install --save classnames
 
 # BUILD AS
 # docker build . -t gatsby-build --build-arg USER_ID=$(id -u)
 # RUN AS
 # mkdir $HOME/my-testing/gatsby/sources
-# docker run -it --user $(id -u) -p 8080:8080 -v $HOME/my-testing/gatsby/sources:/home/gatsby/sources --name gatsby gatsby-build
+# docker run -it --user $(id -u) -p 8000:8000 -v $HOME/my-testing/gatsby/sources:/home/gatsby/sources --name gatsby gatsby-build
+# podman run -it --user $(id -u)  --userns keep-id -p 8000:8000 --mount type=bind,source=$HOME/my-testing/gatsby/sources,target=/home/gatsby/sources --name gatsby gatsby-build
 
-# NOTES
+# TROUBLE #1: how to change sources and permission denied
 ## -- if your user has not has defined the same uid number then it's probably the only solution to nuked the `blog` directory with
 ## chmod a+rwx -R $HOME/my-testing/gatsby/sources
 ## docker exec -u 0 -it <docker_image> sh -c 'chmod a+rwx -R /home/gatsby/sources'
-## -- only when necessary to clean the environment
+
+# HELPER: clean env
 ## docker rm $(docker ps -q -f status=exited)
 
-# AFTER
-## there could be already ~/myblog generated in the docker image and only doing like `mv ~/myblog ~/sources/myblog` is necessary
-# cd ~/sources
-# cd myblog
-# yarn upgrade
+# NEXT STEPS: myblog to the shared volume
+## mv ~/myblog ~/source/myblog
+# TROUBLE #2: podman error 'mv: setting attribute 'security.selinux' for 'security.selinux': Permission denied'
+# it's just warning, ignore it :-)
 
-# installing the AsciiDoc transformer to write articles with AsciiDoc
-## see details at: https://www.gatsbyjs.org/packages/gatsby-transformer-asciidoc/
-# npm install --save gatsby-transformer-asciidoc
+# NEXT STEPS #3: develop
+## 
 
 # TODO: what to do next? :)
